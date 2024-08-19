@@ -36,14 +36,14 @@ function ExcelReader() {
             // Convert ArrayBuffer to binary string
             const data = new Uint8Array(arrayBuffer);
             const workbook = XLSX.read(data, { type: "array" });
-            let sheetName = workbook.SheetNames[0].trim(); // Trim spaces from sheet name
+            let sheetName = workbook.SheetNames[0];
             const sheet = workbook.Sheets[sheetName];
             const parsedData = XLSX.utils.sheet_to_json<ParsedData>(sheet);
 
             // Extract, trim, and normalize keys from the first row of parsed data
             const keys =
               parsedData.length > 0
-                ? Object.keys(parsedData[0]).map((key) => key.trim())
+                ? Object.keys(parsedData[0]).map((key) => key)
                 : [];
 
             console.log(workbook.Sheets[sheetName]);
