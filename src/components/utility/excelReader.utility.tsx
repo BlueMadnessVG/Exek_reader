@@ -58,8 +58,7 @@ function ExcelReader() {
     [data]
   );
 
-  const { getRootProps, acceptedFiles, getInputProps, isDragActive } =
-    useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <>
