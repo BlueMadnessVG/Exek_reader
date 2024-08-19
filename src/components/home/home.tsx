@@ -1,13 +1,6 @@
 import { useExcelStore } from "../global/excel.store";
 import ExcelReader from "../utility/excelReader.utility";
-import {
-  FormControl,
-  TextField,
-  Autocomplete,
-  Select,
-  MenuItem,
-  InputLabel,
-} from "@mui/material";
+import { Select, MenuItem } from "@mui/material";
 import FilterController from "../utility/controller/filter.controller";
 import ExcelTable from "./table";
 import { useEffect, useState } from "react";
@@ -16,8 +9,9 @@ import SadIcon from "../../assets/icons/sad.icon";
 import excelIcon from "../../assets/icons/excel_icon.png";
 
 function Home() {
-  const { data, filter_key, mainExcel, filteredData, setMainExcel } =
-    useExcelStore((state: any) => state);
+  const { data, mainExcel, filteredData, setMainExcel } = useExcelStore(
+    (state: any) => state
+  );
 
   const [missingUUIDs, setMissingUUID] = useState<any>([]);
 

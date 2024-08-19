@@ -13,9 +13,7 @@ function FilterController() {
   const {
     data,
     keys,
-    filter_key,
     filter,
-    setFilterKey,
     mainExcel,
     setFilter,
     selectedCols,
@@ -24,15 +22,11 @@ function FilterController() {
 
   const [RFCs, setRFCs] = useState<any>([]);
 
-  const handleFilterKeyChange = (event: any) => {
-    setFilterKey(event.target.value);
-  };
-
   const handleFilterChange = (event: any) => {
     setFilter(event.target.value);
   };
 
-  const handleChange = (event: any, newValue: any) => {
+  const handleChange = (_event: any, newValue: any) => {
     setSelectedCols(newValue);
   };
 

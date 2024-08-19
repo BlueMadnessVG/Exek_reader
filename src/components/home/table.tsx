@@ -33,7 +33,7 @@ function ExcelTable({ table_key }: { table_key: string }) {
     filtered: 0,
   });
 
-  const handleChangePage = (event: any, newPage: any) => {
+  const handleChangePage = (_event: any, newPage: any) => {
     setPage(newPage);
   };
 
