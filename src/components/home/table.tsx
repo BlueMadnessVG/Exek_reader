@@ -19,9 +19,8 @@ import { useEffect, useState } from "react";
 import excelIcon from "../../assets/icons/excel_icon.png";
 
 function ExcelTable({ table_key }: { table_key: string }) {
-  const { keys, data, filter_key, filter, selectedCols } = useExcelStore(
-    (state: any) => state
-  );
+  const { keys, data, filter_key, filter, selectedCols, mainExcel } =
+    useExcelStore((state: any) => state);
 
   const [filteredData, setFilteredData] = useState<any[]>([]);
 
@@ -29,7 +28,10 @@ function ExcelTable({ table_key }: { table_key: string }) {
   const [rowsPerPage, setRowsPerPage] = useState(15);
 
   const [operationKey, setOperationKey] = useState("");
-  const [operationResult, setOperationResult] = useState<any>(0);
+  const [operationResult, setOperationResult] = useState<any>({
+    total: 0,
+    filtered: 0,
+  });
 
   const handleChangePage = (event: any, newPage: any) => {
     setPage(newPage);
@@ -47,44 +49,67 @@ function ExcelTable({ table_key }: { table_key: string }) {
 
   const handleOperationResult = (key: string) => {
     // Initialize the sum variable
-    let sum = 0;
-
+    let abs = 0;
+    let fil = 0;
     // Iterate over filteredData to accumulate the sum
+    for (const item of data[table_key]) {
+      // Ensure the item has the key and the value is a number
+      if (item[key] !== undefined && typeof item[key] === "number") {
+        abs += item[key];
+      }
+    }
+
     for (const item of filteredData) {
       // Ensure the item has the key and the value is a number
       if (item[key] !== undefined && typeof item[key] === "number") {
-        sum += item[key];
+        fil += item[key];
       }
     }
+
     const formatter = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     });
-
     // Return the computed sum
-    setOperationResult(formatter.format(sum));
+    setOperationResult({
+      total: formatter.format(abs),
+      filtered: formatter.format(fil),
+    });
+  };
+
+  const showMissingUUID = (filtered: any) => {
+    if (mainExcel !== "") {
+      // Get UUIDs from data[mainExcel]
+      const existingUUIDs = new Set(
+        data[mainExcel].map((item: any) => item.UUID.toLowerCase())
+      );
+      // Filter items in data[table_key] where UUID does not exist in existingUUIDs
+      const missingDataItems = filtered.filter(
+        (item: any) => !existingUUIDs.has(item.UUID.toLowerCase())
+      );
+      // Set the filtered data to missingDataItems
+      setFilteredData(missingDataItems);
+    } else {
+      setFilteredData(filtered);
+    }
   };
 
   useEffect(() => {
-    if (filter_key != "") {
-      if (Object.keys(data).length > 0) {
-        const filtered = data[table_key].flat().filter((item: any) => {
-          const value = item?.[filter_key];
-          return (
-            (typeof value === "string" &&
-              value.toUpperCase().includes(filter.toUpperCase())) ||
-            (typeof value === "number" && value.toString().includes(filter))
-          );
+    console.log(data[table_key][0]);
+
+    if (Object.keys(data).length > 0) {
+      let filtered;
+      if (filter !== "") {
+        filtered = data[table_key].flat().filter((item: any) => {
+          const value = item?.["RFC emisor"];
+          return value.includes(filter);
         });
-        setFilteredData(filtered);
+      } else {
+        filtered = data[table_key].flat();
       }
-    } else {
-      if (Object.keys(data).length > 0) {
-        const filtered = data[table_key];
-        setFilteredData(filtered);
-      }
+      showMissingUUID(filtered);
     }
-  }, [filter, filter_key, data]);
+  }, [filter, filter_key, data, mainExcel]);
 
   useEffect(() => {
     handleOperationResult(operationKey);
@@ -98,7 +123,7 @@ function ExcelTable({ table_key }: { table_key: string }) {
         </picture>
         {table_key}
       </h1>
-      <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+      <TableContainer component={Paper} sx={{ maxHeight: 400, minHeight: 400 }}>
         <Table stickyHeader size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
@@ -173,7 +198,16 @@ function ExcelTable({ table_key }: { table_key: string }) {
             disabled
             variant="filled"
             size="small"
-            value={operationResult}
+            value={operationResult.total}
+            helperText="Total en excel"
+          />
+          <TextField
+            hiddenLabel
+            disabled
+            variant="filled"
+            size="small"
+            value={operationResult.filtered}
+            helperText="Total en faltantes"
           />
         </div>
       </div>

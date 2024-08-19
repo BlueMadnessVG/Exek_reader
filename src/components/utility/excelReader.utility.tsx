@@ -28,7 +28,7 @@ function ExcelReader() {
         setFileNames((prev) => [...prev, file.name]);
 
         const reader = new FileReader();
-        reader.onabort = () => console.log("file reading was abort");
+        reader.onabort = () => console.log("file reading was aborted");
         reader.onerror = () => console.log("file reading has an error");
         reader.onload = (event) => {
           const arrayBuffer = event.target?.result as ArrayBuffer;
@@ -36,14 +36,17 @@ function ExcelReader() {
             // Convert ArrayBuffer to binary string
             const data = new Uint8Array(arrayBuffer);
             const workbook = XLSX.read(data, { type: "array" });
-            const sheetName = workbook.SheetNames[0];
+            let sheetName = workbook.SheetNames[0].trim(); // Trim spaces from sheet name
             const sheet = workbook.Sheets[sheetName];
             const parsedData = XLSX.utils.sheet_to_json<ParsedData>(sheet);
 
-            // Extract keys from the first row of parsed data
+            // Extract, trim, and normalize keys from the first row of parsed data
             const keys =
-              parsedData.length > 0 ? Object.keys(parsedData[0]) : [];
+              parsedData.length > 0
+                ? Object.keys(parsedData[0]).map((key) => key.trim())
+                : [];
 
+            console.log(workbook.Sheets[sheetName]);
             // Update store with data and keys
             setData(file.name, parsedData);
             setKeys(keys);

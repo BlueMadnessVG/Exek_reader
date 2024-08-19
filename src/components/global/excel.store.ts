@@ -7,10 +7,12 @@ interface ExcelStoreState {
   filter_key: string;
   filter: string;
   selectedCols: string[];
+  mainExcel: string;
   setData: (fileName: string, data: any[]) => void;
   setKeys: (fileName: string, keys: string[]) => void;
   setFilterKey: (filter_key: string) => void;
   setFilter: (filter: string) => void;
+  setMainExcel: (mainExcel: string) => void;
   setSelectedCols: (selectedCols: string) => void;
   clearData: () => void;
 }
@@ -19,9 +21,10 @@ interface ExcelStoreState {
 export const useExcelStore = create<ExcelStoreState>((set) => ({
   data: {},
   keys: [],
-  filter_key: "",
+  filter_key: "RFC emisor",
   filter: "",
   selectedCols: [],
+  mainExcel: "",
   setData: (fileName, data) =>
     set((state) => ({
       data: { ...state.data, [fileName]: data },
@@ -30,5 +33,6 @@ export const useExcelStore = create<ExcelStoreState>((set) => ({
   setFilterKey: (filter_key: string) => set({ filter_key }),
   setFilter: (filter: string) => set({ filter }),
   setSelectedCols: (selectedCols: any) => set({ selectedCols }),
+  setMainExcel: (mainExcel: any) => set({ mainExcel }),
   clearData: () => set({ data: {} }),
 }));
